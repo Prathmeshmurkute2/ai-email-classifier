@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import categoryModel from './category.model';
+
 
 const classificationSchema = new mongoose.Schema({
   emailId: {
@@ -33,4 +33,4 @@ const classificationSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 
-export default mongoose.model("classification",categoryModel)
+export default mongoose.model("Classification", classificationSchema);
