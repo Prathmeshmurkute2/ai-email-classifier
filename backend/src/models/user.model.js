@@ -12,7 +12,19 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false, // Optional for users logging in via Google OAuth directly
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  googleTokens: {
+    access_token: String,
+    refresh_token: String,
+    scope: String,
+    token_type: String,
+    expiry_date: Number,
   },
 }, { timestamps: true });
 

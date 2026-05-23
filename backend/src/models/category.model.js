@@ -8,6 +8,11 @@ const categorySchema = new mongoose.Schema({
     lowercase: true,
   },
 
+  color: {
+    type: String,
+    default: "#3b82f6", // Default Tailwind blue-500
+  },
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

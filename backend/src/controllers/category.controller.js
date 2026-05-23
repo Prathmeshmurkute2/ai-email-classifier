@@ -2,11 +2,24 @@ import Category from "../models/category.model.js"
 
 export const createCategory = async (req,res)=>{
     try{
-        const { name } = res.body;
-        const userId = req.user?.id||null;
+        const { name, color } = req.body;
+        const userId = req.user?.id || null;
+
+        const existingCategory = await Category.findOne({
+            name: name.toLowerCase(),
+            userId,
+        });
+
+        if(existingCategory){
+            return res.status(400).json({
+                success: false,
+                message: "Category already exists",
+            });
+        }
 
         const category = await Category.create({
             name,
+            color,
             userId,
             isSystem: false,
         });

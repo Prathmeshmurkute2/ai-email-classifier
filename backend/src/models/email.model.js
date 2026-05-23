@@ -1,27 +1,45 @@
 import mongoose from "mongoose";
 
 const emailSchema = new mongoose.Schema({
-    userId:{
-        type:mongoose.Schema.Types.ObjectId,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required:true,
+        required: true,
     },
-    subject:String,
-    body:String,
-    sender:String,
-
+    gmailId: {
+        type: String,
+        unique: true,
+        sparse: true, // Allows null/missing values for manually created/mock emails
+    },
+    subject: String,
+    content: String, // email body
+    sender: String,
     status: {
-        type:String,
+        type: String,
         enum: ["unread", "read"],
-        default: "unread";
+        default: "unread",
     },
-
-    receivedAt:{
+    predictedLabel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        default: null,
+    },
+    userAssignedLabel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        default: null,
+    },
+    confidenceScore: {
+        type: Number,
+        default: 0.0,
+    },
+    receivedAt: {
         type: Date,
-        default:Date.now,
+        default: Date.now,
     },
-}, { timestamps:true });
+}, { timestamps: true });
 
-emailSchema.index({ userId:1 });
+emailSchema.index({ userId: 1 });
 
-export default mongoose.model("Email", emailSchema)
+
+export default mongoose.model("Email", emailSchema);
