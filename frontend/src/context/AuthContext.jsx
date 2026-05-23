@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
@@ -26,6 +26,12 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("smartmail_token"));
   const [loading, setLoading] = useState(true);
 
+  const logout = useCallback(() => {
+    localStorage.removeItem("smartmail_token");
+    setToken(null);
+    setUser(null);
+  }, []);
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (token) {
@@ -40,9 +46,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
     fetchProfile();
-  }, [token]);
+  }, [token, logout]);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     setLoading(true);
     try {
       const res = await api.post("/auth/login", { email, password });
@@ -59,9 +65,9 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
     setLoading(true);
     try {
       const res = await api.post("/auth/register", { name, email, password });
@@ -78,15 +84,9 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
-    localStorage.removeItem("smartmail_token");
-    setToken(null);
-    setUser(null);
-  };
-
-  const connectGoogle = async () => {
+  const connectGoogle = useCallback(async () => {
     try {
       // Pass the userId in state so we can link Google credentials to this user
       const userIdParam = user?._id ? `?userId=${user._id}` : "";
@@ -98,13 +98,13 @@ export const AuthProvider = ({ children }) => {
       console.error("Google Auth connection error:", err.message);
       alert("Failed to connect to Google OAuth. Please check your backend environment variables.");
     }
-  };
+  }, [user]);
 
-  const handleOAuthSuccess = (jwtToken, name, email) => {
+  const handleOAuthSuccess = useCallback((jwtToken, name, email) => {
     localStorage.setItem("smartmail_token", jwtToken);
     setToken(jwtToken);
     setUser({ name, email });
-  };
+  }, []);
 
   return (
     <AuthContext.Provider
