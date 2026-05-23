@@ -36,6 +36,12 @@ const Dashboard = () => {
   const [useMock, setUseMock] = useState(true); // Default to mock for easy testing
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showDetailPicker, setShowDetailPicker] = useState(false);
+
+  // Auto-close detail picker if the active email details view changes
+  useEffect(() => {
+    setShowDetailPicker(false);
+  }, [selectedEmail]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -349,12 +355,7 @@ const Dashboard = () => {
                     {/* Popover category dropdown inside email body */}
                     <div className="relative">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Trigger mini category override overlay
-                          const emailCardTag = e.currentTarget.nextSibling;
-                          emailCardTag.classList.toggle("hidden");
-                        }}
+                        onClick={() => setShowDetailPicker(!showDetailPicker)}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1.5 border cursor-pointer ${
                           selectedEmail.userAssignedLabel
                             ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
@@ -371,17 +372,14 @@ const Dashboard = () => {
                         </span>
                       </button>
                       
-                      <div className="hidden absolute right-0 mt-1 z-30">
+                      {showDetailPicker && (
                         <CategoryPicker
                           categories={categories}
                           currentCategoryId={selectedEmail.userAssignedLabel?._id || selectedEmail.predictedLabel?._id}
                           onSelectCategory={(catId) => handleUpdateLabel(selectedEmail._id, catId)}
-                          closePicker={(e) => {
-                            // Find and hide overlay
-                            document.querySelectorAll(".reclassify-overlay").forEach((p) => p.classList.add("hidden"));
-                          }}
+                          closePicker={() => setShowDetailPicker(false)}
                         />
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>

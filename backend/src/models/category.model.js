@@ -33,11 +33,10 @@ categorySchema.index({ name: 1, userId: 1 }, { unique: true });
 categorySchema.index({ userId: 1 });
 
 // validation middleware
-categorySchema.pre("save", function (next) {
+categorySchema.pre("save", function () {
   if (this.isSystem && this.userId !== null) {
-    return next(new Error("System categories must have userId = null"));
+    throw new Error("System categories must have userId = null");
   }
-  next();
 });
 
 export default mongoose.model("Category", categorySchema);

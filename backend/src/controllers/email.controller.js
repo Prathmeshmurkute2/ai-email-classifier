@@ -199,7 +199,7 @@ export const syncEmails = async (req, res) => {
               name: categoryName,
               userId,
               isSystem: false,
-              color: "#" + Math.floor(Math.random()*16777215).toString(16), // Random color
+              color: "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'), // Random color
             });
           }
           predictedLabelId = category._id;
