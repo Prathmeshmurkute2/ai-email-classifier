@@ -98,6 +98,32 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteCategory = async (categoryId) => {
+    try {
+      const res = await api.delete(`/categories/${categoryId}`);
+      if (res.data.success) {
+        setCategories(categories.filter((c) => c._id !== categoryId));
+        setSuccessMsg("Category deleted successfully.");
+        
+        // Reset category filter if it was active
+        if (selectedCategory?._id === categoryId) {
+          setSelectedCategory(null);
+          setActiveMailbox("all");
+        }
+
+        // Reload emails (since their tags might have cleared) and stats
+        const [emailRes, statsRes] = await Promise.all([
+          api.get("/emails"),
+          api.get("/emails/stats")
+        ]);
+        setEmails(emailRes.data.data);
+        setStats(statsRes.data.data);
+      }
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || "Failed to delete category.");
+    }
+  };
+
   const handleSyncEmails = async () => {
     setLoading(true);
     setErrorMsg("");
@@ -199,6 +225,7 @@ const Dashboard = () => {
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
         onCreateCategory={handleCreateCategory}
+        onDeleteCategory={handleDeleteCategory}
         activeMailbox={activeMailbox}
         setActiveMailbox={setActiveMailbox}
       />
@@ -221,13 +248,13 @@ const Dashboard = () => {
             {successMsg && (
               <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-xs font-semibold flex items-center space-x-1.5 animate-slide-down">
                 <ShieldCheck className="h-4 w-4 shrink-0" />
-                <span className="truncate">{successMsg}</span>
+                <span>{successMsg}</span>
               </div>
             )}
             {errorMsg && (
               <div className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-semibold flex items-center space-x-1.5 animate-slide-down">
                 <AlertCircle className="h-4 w-4 shrink-0" />
-                <span className="truncate">{errorMsg}</span>
+                <span>{errorMsg}</span>
               </div>
             )}
           </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Inbox, Mail, FolderHeart, Plus, LogOut, ChevronRight, Sparkles, Folder } from "lucide-react";
+import { Inbox, Mail, FolderHeart, Plus, LogOut, ChevronRight, Sparkles, Folder, Trash2 } from "lucide-react";
 
 const AESTHETIC_COLORS = [
   "#ef4444", // Red
@@ -16,6 +16,7 @@ const Sidebar = ({
   selectedCategory,
   setSelectedCategory,
   onCreateCategory,
+  onDeleteCategory,
   activeMailbox,
   setActiveMailbox,
 }) => {
@@ -139,27 +140,52 @@ const Sidebar = ({
 
           <div className="space-y-0.5 max-h-56 overflow-y-auto pr-1">
             {categories.map((cat) => (
-              <button
+              <div
                 key={cat._id}
-                onClick={() => {
-                  setSelectedCategory(cat);
-                  setActiveMailbox(null);
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all cursor-pointer ${
-                  selectedCategory?._id === cat._id
-                    ? "bg-blue-600/10 text-blue-400 border-l-2 border-blue-500 pl-2.5"
-                    : "hover:bg-slate-800/40 text-slate-400 hover:text-slate-200"
-                }`}
+                className="group relative flex items-center w-full"
               >
-                <div className="flex items-center space-x-2.5 min-w-0">
-                  <span
-                    className="h-2 w-2 rounded-full shrink-0"
-                    style={{ backgroundColor: cat.color || "#3b82f6" }}
-                  />
-                  <span className="truncate capitalize">{cat.name}</span>
-                </div>
-                <ChevronRight className="h-3 w-3 opacity-30 group-hover:opacity-100" />
-              </button>
+                <button
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setActiveMailbox(null);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all cursor-pointer pr-8 ${
+                    selectedCategory?._id === cat._id
+                      ? "bg-blue-600/10 text-blue-400 border-l-2 border-blue-500 pl-2.5"
+                      : "hover:bg-slate-800/40 text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <span
+                      className="h-2 w-2 rounded-full shrink-0"
+                      style={{ backgroundColor: cat.color || "#3b82f6" }}
+                    />
+                    <span className="truncate capitalize">{cat.name}</span>
+                  </div>
+                  {cat.isSystem && (
+                    <ChevronRight className="h-3 w-3 opacity-30 group-hover:opacity-100" />
+                  )}
+                </button>
+
+                {!cat.isSystem && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (
+                        confirm(
+                          `Are you sure you want to delete the label "${cat.name.toUpperCase()}"? Any emails classified under this category will return to Uncategorized.`
+                        )
+                      ) {
+                        onDeleteCategory(cat._id);
+                      }
+                    }}
+                    className="absolute right-2 p-1.5 rounded hover:bg-red-500/15 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                    title="Delete Label"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             ))}
 
             {categories.length === 0 && (
