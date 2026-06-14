@@ -1,5 +1,13 @@
 # SmartMail AI - Intelligent Inbox Assistant
 
+🚀 Live Demo: https://sortmailai.vercel.app
+
+🌐 Backend API: https://ai-email-classifier-ola8.onrender.com
+
+🤖 ML Service: https://ai-email-classifier-6264.onrender.com
+
+📂 GitHub Repository: https://github.com/Prathmeshmurkute2/ai-email-classifier
+
 SmartMail AI is a production-style, personalized email classification platform. It connects to Gmail, fetches messages, allows you to create custom categories, and uses a machine learning classifier to learn your labeling behavior and automatically categorize incoming emails in real-time.
 
 ---
